@@ -1,111 +1,164 @@
-const pricing = [
+import Link from "next/link";
+
+const packages = [
+  {
+    name: "Website Launch Package",
+    price: "$250",
+    badge: "Entry Offer",
+    description:
+      "A fast, clean 1-page website for small businesses that need to get online quickly.",
+    features: [
+      "1-page website",
+      "Mobile responsive design",
+      "Contact form setup",
+      "Basic SEO setup",
+      "48-hour turnaround",
+      "50% deposit upfront",
+      "Final payment due before launch",
+    ],
+    cta: "Start My Website",
+    featured: true,
+  },
   {
     name: "Starter Website",
     price: "$499+",
+    badge: "Best For New Businesses",
     description:
-      "Perfect for startups, solo businesses, and local services that need a clean professional online presence.",
+      "A polished starter website for businesses that need more structure than a single-page launch site.",
     features: [
-      "Up to 5 pages",
-      "Mobile-friendly design",
-      "Contact form",
-      "Basic SEO setup",
-      "Launch assistance",
+      "Up to 5 core pages",
+      "Mobile-first responsive design",
+      "Contact form setup",
+      "Basic SEO structure",
+      "Domain connection guidance",
+      "Launch support",
     ],
-    highlight: false,
+    cta: "Start A Website",
+    featured: false,
   },
   {
     name: "Business Website",
     price: "$999+",
+    badge: "Most Popular",
     description:
-      "A stronger business-focused website with more sections, branding, polish, and conversion structure.",
+      "A stronger website package for businesses that need better branding, more sections, and better conversion flow.",
     features: [
-      "Custom design layout",
-      "Advanced sections",
-      "Stronger branding",
-      "Expanded SEO setup",
-      "Higher-end visual polish",
+      "Custom homepage layout",
+      "Expanded service sections",
+      "Portfolio or gallery section",
+      "Stronger call-to-action flow",
+      "Improved local SEO structure",
+      "Mobile and desktop polish",
     ],
-    highlight: true,
+    cta: "Build My Site",
+    featured: false,
   },
   {
     name: "Ecommerce Website",
     price: "Custom",
+    badge: "Product Brands",
     description:
-      "For product brands and businesses that need online shopping, checkout systems, and product management.",
+      "For businesses that need product pages, checkout planning, payment setup, and a stronger shopping experience.",
     features: [
-      "Product pages",
-      "Shopping cart",
-      "Checkout integration",
-      "Mobile ecommerce flow",
+      "Product page structure",
+      "Cart and checkout planning",
+      "Mobile ecommerce layout",
+      "Payment integration planning",
+      "Product organization",
       "Launch support",
     ],
-    highlight: false,
+    cta: "Plan My Store",
+    featured: false,
   },
 ];
 
 export default function PricingSection() {
   return (
-    <section className="bg-slate-950 py-24 text-white">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="text-center">
-          <p className="text-sm font-black uppercase tracking-[0.3em] text-sky-400">
-            Pricing
+    <section id="pricing" className="bg-slate-950 px-6 py-24 text-white">
+      <div className="mx-auto max-w-7xl">
+        <div className="mx-auto mb-14 max-w-3xl text-center">
+          <p className="mb-3 text-sm font-black uppercase tracking-[0.3em] text-sky-300">
+            Website Packages
           </p>
 
-          <h2 className="mt-4 text-4xl font-black tracking-tight md:text-6xl">
-            Website packages designed for growing businesses.
+          <h2 className="text-4xl font-black tracking-tight sm:text-5xl">
+            Simple website packages that grow with your business.
           </h2>
 
-          <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-slate-300">
-            Whether you need a simple online presence or a more advanced
-            customer-focused website, the goal is to provide a polished,
-            professional result without oversized agency pricing.
+          <p className="mt-5 text-lg leading-8 text-slate-300">
+            Start with a $250 launch site, move into a larger business website,
+            or build a full ecommerce experience when your brand is ready.
           </p>
         </div>
 
-        <div className="mt-16 grid gap-6 lg:grid-cols-3">
-          {pricing.map((plan) => (
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          {packages.map((item) => (
             <div
-              key={plan.name}
-              className={`rounded-[2rem] border p-8 transition hover:-translate-y-1 ${
-                plan.highlight
-                  ? "border-sky-400 bg-sky-400/10 shadow-2xl shadow-sky-500/10"
-                  : "border-white/10 bg-white/5"
+              key={item.name}
+              className={`rounded-[2rem] border p-7 shadow-xl transition duration-300 hover:-translate-y-2 ${
+                item.featured
+                  ? "border-sky-400 bg-white text-slate-950 shadow-sky-500/20"
+                  : "border-white/10 bg-white/5 text-white"
               }`}
             >
-              {plan.highlight && (
-                <div className="mb-6 inline-flex rounded-full bg-sky-400 px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-slate-950">
-                  Most Popular
-                </div>
-              )}
+              <div
+                className={`mb-5 inline-flex rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em] ${
+                  item.featured
+                    ? "bg-sky-100 text-sky-700"
+                    : "bg-white/10 text-sky-300"
+                }`}
+              >
+                {item.badge}
+              </div>
 
-              <h3 className="text-3xl font-black">{plan.name}</h3>
+              <h3 className="text-2xl font-black">{item.name}</h3>
 
-              <p className="mt-4 text-5xl font-black text-sky-300">
-                {plan.price}
+              <p className="mt-4 text-4xl font-black">{item.price}</p>
+
+              <p
+                className={`mt-4 text-sm leading-6 ${
+                  item.featured ? "text-slate-700" : "text-slate-300"
+                }`}
+              >
+                {item.description}
               </p>
 
-              <p className="mt-5 leading-7 text-slate-300">
-                {plan.description}
-              </p>
-
-              <ul className="mt-8 space-y-4">
-                {plan.features.map((feature) => (
-                  <li
-                    key={feature}
-                    className="flex items-center gap-3 text-sm font-semibold text-slate-200"
-                  >
-                    <span className="text-sky-400">✓</span>
-                    {feature}
+              <ul className="mt-7 space-y-3">
+                {item.features.map((feature) => (
+                  <li key={feature} className="flex gap-3 text-sm font-semibold">
+                    <span
+                      className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-black ${
+                        item.featured
+                          ? "bg-sky-400 text-slate-950"
+                          : "bg-sky-400 text-slate-950"
+                      }`}
+                    >
+                      ✓
+                    </span>
+                    <span>{feature}</span>
                   </li>
                 ))}
               </ul>
 
-              <button className="mt-10 w-full rounded-full bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.2em] text-slate-950 transition hover:bg-sky-300">
-                Get Started
-              </button>
+              <Link
+                href="/contact"
+                className={`mt-8 inline-flex w-full items-center justify-center rounded-full px-5 py-4 text-xs font-black uppercase tracking-[0.18em] transition ${
+                  item.featured
+                    ? "bg-slate-950 text-white hover:bg-slate-800"
+                    : "bg-white text-slate-950 hover:bg-sky-300"
+                }`}
+              >
+                {item.cta}
+              </Link>
             </div>
           ))}
+        </div>
+
+        <div className="mx-auto mt-10 max-w-4xl rounded-3xl border border-white/10 bg-white/5 p-6 text-center text-sm leading-7 text-slate-300">
+          <strong className="text-white">Launch Package Terms:</strong> The
+          $250 Website Launch Package requires a 50% deposit upfront. Final
+          payment is due before the website goes live. Larger projects are
+          quoted based on scope.
         </div>
       </div>
     </section>

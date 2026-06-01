@@ -64,7 +64,7 @@ export default function Navbar() {
             href="/contact"
             className="hidden rounded-full bg-sky-500 px-6 py-3 text-xs font-black uppercase tracking-[0.2em] text-white transition duration-300 hover:scale-105 hover:bg-sky-400 lg:inline-flex"
           >
-            Free Website Review
+            Start For $250
           </Link>
 
           <button
@@ -96,7 +96,7 @@ export default function Navbar() {
                 onClick={() => setOpen(false)}
                 className="mt-2 rounded-full bg-sky-500 px-6 py-4 text-center text-xs font-black uppercase tracking-[0.2em] text-white transition hover:bg-sky-400"
               >
-                Free Website Review
+                Start For $250
               </Link>
             </nav>
           </div>

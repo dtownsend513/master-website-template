@@ -2,11 +2,30 @@ import Link from "next/link";
 
 const plans = [
   {
+    name: "Website Launch Package",
+    price: "$250",
+    tag: "Entry Offer",
+    description:
+      "A fast, clean 1-page website for small businesses that need to get online quickly.",
+    features: [
+      "1-page website",
+      "Mobile responsive design",
+      "Contact form setup",
+      "Basic SEO structure",
+      "48-hour turnaround",
+      "Built from master website template",
+      "50% deposit upfront",
+      "Final payment due before launch",
+    ],
+    cta: "Start My Website",
+    highlighted: true,
+  },
+  {
     name: "Starter Website",
     price: "$499+",
     tag: "Best For New Businesses",
     description:
-      "A clean, professional starter website for businesses that need to get online quickly with a polished first impression.",
+      "A clean, professional starter website for businesses that need more than one section and a stronger first impression.",
     features: [
       "Up to 5 core pages",
       "Mobile-first responsive design",
@@ -23,7 +42,7 @@ const plans = [
     price: "$999+",
     tag: "Most Popular",
     description:
-      "A stronger website package for businesses that need better branding, more sections, stronger visuals, and a higher-converting structure.",
+      "A stronger website package for businesses that need better branding, more sections, stronger visuals, and higher-converting structure.",
     features: [
       "Custom homepage layout",
       "Expanded service sections",
@@ -34,12 +53,12 @@ const plans = [
       "Launch support",
     ],
     cta: "Build My Business Site",
-    highlighted: true,
+    highlighted: false,
   },
   {
     name: "Ecommerce Website",
     price: "Custom",
-    tag: "Best For Product Brands",
+    tag: "Product Brands",
     description:
       "A product-focused website for brands that need online shopping, product pages, checkout flow, and stronger product presentation.",
     features: [
@@ -70,7 +89,12 @@ const faqs = [
   {
     question: "Do I have to pay everything upfront?",
     answer:
-      "Project payment terms can be discussed before starting. The goal is to keep the process clear and simple before any work begins.",
+      "No. The Website Launch Package requires a 50% deposit upfront, with the remaining balance due before launch. Larger projects may have custom payment terms depending on scope.",
+  },
+  {
+    question: "What is included in the $250 Website Launch Package?",
+    answer:
+      "The $250 Website Launch Package includes a 1-page mobile-responsive website, contact form setup, basic SEO structure, and a 48-hour turnaround.",
   },
   {
     question: "Can you redesign my current website?",
@@ -105,17 +129,19 @@ export default function PricingPage() {
             </p>
 
             <h1 className="mt-5 text-5xl font-black leading-[0.95] tracking-tight md:text-7xl">
-              Website packages built for small businesses that need to look professional.
+              Website packages built for small businesses that need to look
+              professional.
             </h1>
 
             <p className="mx-auto mt-8 max-w-3xl text-lg leading-8 text-slate-300">
               Clear website options for startups, local businesses, service
-              brands, and ecommerce projects. Every package is built around
-              better presentation, stronger trust, and cleaner customer flow.
+              brands, and ecommerce projects. Start small with a $250 launch
+              website or upgrade into a larger build when your business needs
+              more.
             </p>
           </div>
 
-          <div className="mt-16 grid gap-8 lg:grid-cols-3">
+          <div className="mt-16 grid gap-8 md:grid-cols-2 xl:grid-cols-4">
             {plans.map((plan) => (
               <div
                 key={plan.name}
