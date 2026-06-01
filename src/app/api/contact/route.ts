@@ -3,46 +3,108 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function POST(req: Request) {
+function clean(value: unknown) {
+  if (typeof value !== "string") return "";
+  return value.trim();
+}
+
+export async function POST(request: Request) {
   try {
-    const body = await req.json();
+    const body = await request.json();
 
-    const { name, email, businessName, projectType, website, message } = body;
+    const name = clean(body.name);
+    const email = clean(body.email);
+    const phone = clean(body.phone);
+    const businessName = clean(body.businessName);
+    const packageInterest = clean(body.packageInterest);
+    const currentWebsite = clean(body.currentWebsite);
+    const hasDomain = clean(body.hasDomain);
+    const launchTimeline = clean(body.launchTimeline);
+    const projectDetails = clean(body.projectDetails);
 
-    if (!name || !email || !message) {
+    if (
+      !name ||
+      !email ||
+      !businessName ||
+      !packageInterest ||
+      !hasDomain ||
+      !launchTimeline ||
+      !projectDetails
+    ) {
       return NextResponse.json(
-        { error: "Name, email, and project details are required." },
+        { message: "Missing required fields." },
         { status: 400 }
       );
     }
 
-    const data = await resend.emails.send({
-      from: "Townsend Website <onboarding@resend.dev>",
+    await resend.emails.send({
+      from: "Townsend & Townsend <onboarding@resend.dev>",
       to: "dtownsend513@gmail.com",
-      subject: `New Website Review Request from ${name}`,
       replyTo: email,
+      subject: `New Website Lead: ${businessName} — ${packageInterest}`,
       html: `
-        <h2>New Website Review Request</h2>
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+          <h2>New Website Lead</h2>
 
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Business Name:</strong> ${businessName || "Not provided"}</p>
-        <p><strong>Project Type:</strong> ${projectType || "Not selected"}</p>
-        <p><strong>Current Website:</strong> ${website || "Not provided"}</p>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Phone:</strong> ${phone || "Not provided"}</p>
+          <p><strong>Business Name:</strong> ${businessName}</p>
+          <p><strong>Package Interested In:</strong> ${packageInterest}</p>
+          <p><strong>Current Website:</strong> ${
+            currentWebsite || "Not provided"
+          }</p>
+          <p><strong>Has Domain:</strong> ${hasDomain}</p>
+          <p><strong>Launch Timeline:</strong> ${launchTimeline}</p>
 
-        <hr />
-
-        <p><strong>Project Details:</strong></p>
-        <p>${message}</p>
+          <h3>Project Details</h3>
+          <p>${projectDetails.replace(/\n/g, "<br />")}</p>
+        </div>
       `,
     });
 
-    return NextResponse.json({ success: true, data });
-  } catch (error) {
-    console.error("Contact form error:", error);
+    await resend.emails.send({
+      from: "Townsend & Townsend <onboarding@resend.dev>",
+      to: email,
+      subject: "We received your website request",
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+          <h2>We received your website request</h2>
+
+          <p>Thanks for reaching out, ${name}.</p>
+
+          <p>
+            We received your project details and will review your request.
+          </p>
+
+          <p>If the project is a good fit, the next step will be:</p>
+
+          <ul>
+            <li>Review your business goals</li>
+            <li>Recommend the best website package</li>
+            <li>Confirm project scope</li>
+            <li>Collect the 50% deposit</li>
+            <li>Begin the website build</li>
+          </ul>
+
+          <p>
+            Package selected: <strong>${packageInterest}</strong>
+          </p>
+
+          <p>
+            — Townsend & Townsend
+          </p>
+        </div>
+      `,
+    });
 
     return NextResponse.json(
-      { error: "Email failed to send." },
+      { message: "Contact form submitted successfully." },
+      { status: 200 }
+    );
+  } catch {
+    return NextResponse.json(
+      { message: "Something went wrong." },
       { status: 500 }
     );
   }
