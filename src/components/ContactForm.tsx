@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 type FormState = {
   name: string;
@@ -14,7 +15,7 @@ type FormState = {
   projectDetails: string;
 };
 
-const initialFormState: FormState = {
+const initialState: FormState = {
   name: "",
   email: "",
   phone: "",
@@ -27,44 +28,90 @@ const initialFormState: FormState = {
 };
 
 export default function ContactForm() {
-  const [formData, setFormData] = useState<FormState>(initialFormState);
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
-    "idle"
-  );
+  const searchParams = useSearchParams();
 
-  function updateField(
-    event:
+  const [status, setStatus] =
+    useState<"idle" | "loading" | "success" | "error">(
+      "idle"
+    );
+
+  const [formData, setFormData] =
+    useState<FormState>(initialState);
+
+  useEffect(() => {
+    const selected =
+      searchParams.get("package");
+
+    if (!selected) return;
+
+    const packages: Record<string, string> = {
+      launch:
+        "Website Launch Package — $250",
+
+      starter:
+        "Starter Website — $499+",
+
+      business:
+        "Business Website — $999+",
+
+      ecommerce:
+        "Ecommerce Website — Custom",
+    };
+
+    setFormData((prev) => ({
+      ...prev,
+      packageInterest:
+        packages[selected] || "",
+    }));
+  }, [searchParams]);
+
+  function update(
+    e:
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLTextAreaElement>
       | React.ChangeEvent<HTMLSelectElement>
   ) {
-    const { name, value } = event.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData({
+      ...formData,
+      [e.target.name]:
+        e.target.value,
+    });
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setStatus("loading");
+  async function submit(
+    e: React.FormEvent
+  ) {
+    e.preventDefault();
 
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      setStatus("loading");
+
+      const response =
+        await fetch(
+          "/api/contact",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify(
+              formData
+            ),
+          }
+        );
 
       if (!response.ok) {
-        throw new Error("Failed to submit form");
+        throw new Error();
       }
 
-      setFormData(initialFormState);
       setStatus("success");
+
+      setFormData(
+        initialState
+      );
     } catch {
       setStatus("error");
     }
@@ -72,226 +119,234 @@ export default function ContactForm() {
 
   return (
     <form
-      onSubmit={handleSubmit}
-      className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl md:p-8"
+      onSubmit={submit}
+      className="rounded-[2rem] bg-white p-8 shadow-2xl"
     >
-      <div className="mb-8">
+      <div className="mb-10">
+
         <p className="text-sm font-black uppercase tracking-[0.25em] text-sky-600">
-          Project Intake
+          Website Project Intake
         </p>
 
-        <h2 className="mt-3 text-3xl font-black text-slate-950">
-          Tell us about your website project.
+        <h2 className="mt-3 text-4xl font-black text-slate-950">
+          Tell us about your project.
         </h2>
 
-        <p className="mt-3 text-slate-600">
-          Choose the package that fits your business best. If you are unsure,
-          select “Not Sure Yet.”
+        <p className="mt-4 text-slate-600">
+          Pick a package and
+          we’ll guide the rest.
         </p>
+
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
-        <div>
-          <label className="text-sm font-bold text-slate-700" htmlFor="name">
-            Name *
-          </label>
-          <input
-            id="name"
-            name="name"
-            required
-            value={formData.name}
-            onChange={updateField}
-            className="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 text-slate-950 outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
-            placeholder="Your name"
-          />
-        </div>
 
-        <div>
-          <label className="text-sm font-bold text-slate-700" htmlFor="email">
-            Email *
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            value={formData.email}
-            onChange={updateField}
-            className="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 text-slate-950 outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
-            placeholder="you@example.com"
-          />
-        </div>
+        <Input
+          label="Name"
+          name="name"
+          value={formData.name}
+          onChange={update}
+          required
+        />
 
-        <div>
-          <label className="text-sm font-bold text-slate-700" htmlFor="phone">
-            Phone
-          </label>
-          <input
-            id="phone"
-            name="phone"
-            value={formData.phone}
-            onChange={updateField}
-            className="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 text-slate-950 outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
-            placeholder="Optional"
-          />
-        </div>
+        <Input
+          label="Email"
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={update}
+          required
+        />
 
-        <div>
-          <label
-            className="text-sm font-bold text-slate-700"
-            htmlFor="businessName"
-          >
-            Business Name *
-          </label>
-          <input
-            id="businessName"
-            name="businessName"
-            required
-            value={formData.businessName}
-            onChange={updateField}
-            className="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 text-slate-950 outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
-            placeholder="Business name"
-          />
-        </div>
+        <Input
+          label="Phone"
+          name="phone"
+          value={formData.phone}
+          onChange={update}
+        />
 
-        <div>
-          <label
-            className="text-sm font-bold text-slate-700"
-            htmlFor="packageInterest"
-          >
-            Package Interested In *
-          </label>
-          <select
-            id="packageInterest"
-            name="packageInterest"
-            required
-            value={formData.packageInterest}
-            onChange={updateField}
-            className="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 text-slate-950 outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
-          >
-            <option value="">Select a package</option>
-            <option value="Website Launch Package — $250">
-              Website Launch Package — $250
-            </option>
-            <option value="Starter Website — $499+">
-              Starter Website — $499+
-            </option>
-            <option value="Business Website — $999+">
-              Business Website — $999+
-            </option>
-            <option value="Ecommerce Website — Custom">
-              Ecommerce Website — Custom
-            </option>
-            <option value="Not Sure Yet">Not Sure Yet</option>
-          </select>
-        </div>
+        <Input
+          label="Business Name"
+          name="businessName"
+          value={
+            formData.businessName
+          }
+          onChange={update}
+          required
+        />
 
-        <div>
-          <label
-            className="text-sm font-bold text-slate-700"
-            htmlFor="currentWebsite"
-          >
-            Current Website
-          </label>
-          <input
-            id="currentWebsite"
-            name="currentWebsite"
-            value={formData.currentWebsite}
-            onChange={updateField}
-            className="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 text-slate-950 outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
-            placeholder="Optional"
-          />
-        </div>
-
-        <div>
-          <label
-            className="text-sm font-bold text-slate-700"
-            htmlFor="hasDomain"
-          >
-            Do you already have a domain? *
-          </label>
-          <select
-            id="hasDomain"
-            name="hasDomain"
-            required
-            value={formData.hasDomain}
-            onChange={updateField}
-            className="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 text-slate-950 outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
-          >
-            <option value="">Select one</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-            <option value="Not Sure">Not Sure</option>
-          </select>
-        </div>
-
-        <div>
-          <label
-            className="text-sm font-bold text-slate-700"
-            htmlFor="launchTimeline"
-          >
-            When are you trying to launch? *
-          </label>
-          <select
-            id="launchTimeline"
-            name="launchTimeline"
-            required
-            value={formData.launchTimeline}
-            onChange={updateField}
-            className="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 text-slate-950 outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
-          >
-            <option value="">Select timeline</option>
-            <option value="ASAP">ASAP</option>
-            <option value="Within 30 Days">Within 30 Days</option>
-            <option value="1–3 Months">1–3 Months</option>
-            <option value="Just Exploring">Just Exploring</option>
-          </select>
-        </div>
       </div>
 
-      <div className="mt-5">
-        <label
-          className="text-sm font-bold text-slate-700"
-          htmlFor="projectDetails"
-        >
-          Project Details *
+      <Select
+        label="Package Interested In"
+        name="packageInterest"
+        value={
+          formData.packageInterest
+        }
+        onChange={update}
+        required
+        options={[
+          "",
+          "Website Launch Package — $250",
+          "Starter Website — $499+",
+          "Business Website — $999+",
+          "Ecommerce Website — Custom",
+          "Not Sure Yet",
+        ]}
+      />
+
+      <Input
+        label="Current Website"
+        name="currentWebsite"
+        value={
+          formData.currentWebsite
+        }
+        onChange={update}
+      />
+
+      <div className="grid gap-5 md:grid-cols-2">
+
+        <Select
+          label="Already Have Domain?"
+          name="hasDomain"
+          value={
+            formData.hasDomain
+          }
+          onChange={update}
+          required
+          options={[
+            "",
+            "Yes",
+            "No",
+            "Not Sure",
+          ]}
+        />
+
+        <Select
+          label="Launch Timeline"
+          name="launchTimeline"
+          value={
+            formData.launchTimeline
+          }
+          onChange={update}
+          required
+          options={[
+            "",
+            "ASAP",
+            "Within 30 Days",
+            "1–3 Months",
+            "Just Exploring",
+          ]}
+        />
+
+      </div>
+
+      <div className="mt-6">
+
+        <label className="mb-2 block text-sm font-black text-slate-700">
+          Project Details
         </label>
+
         <textarea
-          id="projectDetails"
           name="projectDetails"
           required
           rows={6}
-          value={formData.projectDetails}
-          onChange={updateField}
-          className="mt-2 w-full rounded-2xl border border-slate-300 px-4 py-3 text-slate-950 outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
-          placeholder="Tell us what you need, what your business does, and what pages or features you want."
+          value={
+            formData.projectDetails
+          }
+          onChange={update}
+          className="w-full rounded-3xl border border-slate-300 px-5 py-4 text-slate-950"
         />
+
       </div>
 
       <button
         type="submit"
-        disabled={status === "loading"}
-        className="mt-7 w-full rounded-full bg-sky-400 px-8 py-4 text-sm font-black uppercase tracking-[0.2em] text-slate-950 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-60"
+        disabled={
+          status === "loading"
+        }
+        className="mt-8 w-full rounded-full bg-sky-400 px-8 py-5 text-sm font-black uppercase tracking-[0.2em] text-slate-950"
       >
-        {status === "loading" ? "Sending..." : "Submit Website Request"}
+        {status ===
+        "loading"
+          ? "Submitting..."
+          : "Submit Website Request"}
       </button>
 
       <p className="mt-4 text-center text-sm text-slate-500">
-        Average response time: within 24 hours. Projects start with a 50%
-        deposit.
+        Average response:
+        within 24 hours •
+        50% deposit to begin
       </p>
 
-      {status === "success" && (
-        <div className="mt-5 rounded-2xl bg-green-50 p-4 text-center font-bold text-green-700">
-          Your request was sent successfully.
+      {status ===
+        "success" && (
+        <div className="mt-5 rounded-3xl bg-green-100 p-5 text-center font-bold text-green-700">
+          Request submitted.
         </div>
       )}
 
-      {status === "error" && (
-        <div className="mt-5 rounded-2xl bg-red-50 p-4 text-center font-bold text-red-700">
-          Something went wrong. Please try again.
+      {status ===
+        "error" && (
+        <div className="mt-5 rounded-3xl bg-red-100 p-5 text-center font-bold text-red-700">
+          Submission failed.
         </div>
       )}
     </form>
+  );
+}
+
+function Input({
+  label,
+  ...props
+}: any) {
+  return (
+    <div className="mt-5">
+
+      <label className="mb-2 block text-sm font-black text-slate-700">
+        {label}
+      </label>
+
+      <input
+        {...props}
+        className="w-full rounded-3xl border border-slate-300 px-5 py-4 text-slate-950"
+      />
+
+    </div>
+  );
+}
+
+function Select({
+  label,
+  options,
+  ...props
+}: any) {
+  return (
+    <div className="mt-5">
+
+      <label className="mb-2 block text-sm font-black text-slate-700">
+        {label}
+      </label>
+
+      <select
+        {...props}
+        className="w-full rounded-3xl border border-slate-300 px-5 py-4 text-slate-950"
+      >
+        {options.map(
+          (
+            option: string
+          ) => (
+            <option
+              key={option}
+              value={option}
+            >
+              {option ||
+                "Select"}
+            </option>
+          )
+        )}
+      </select>
+
+    </div>
   );
 }

@@ -17,6 +17,7 @@ const packages = [
       "Final payment due before launch",
     ],
     cta: "Start My Website",
+    href: "/contact?package=launch",
     featured: true,
   },
   {
@@ -34,6 +35,7 @@ const packages = [
       "Launch support",
     ],
     cta: "Start A Website",
+    href: "/contact?package=starter",
     featured: false,
   },
   {
@@ -51,6 +53,7 @@ const packages = [
       "Mobile and desktop polish",
     ],
     cta: "Build My Site",
+    href: "/contact?package=business",
     featured: false,
   },
   {
@@ -68,6 +71,7 @@ const packages = [
       "Launch support",
     ],
     cta: "Plan My Store",
+    href: "/contact?package=ecommerce",
     featured: false,
   },
 ];
@@ -125,14 +129,11 @@ export default function PricingSection() {
 
               <ul className="mt-7 space-y-3">
                 {item.features.map((feature) => (
-                  <li key={feature} className="flex gap-3 text-sm font-semibold">
-                    <span
-                      className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-black ${
-                        item.featured
-                          ? "bg-sky-400 text-slate-950"
-                          : "bg-sky-400 text-slate-950"
-                      }`}
-                    >
+                  <li
+                    key={feature}
+                    className="flex gap-3 text-sm font-semibold"
+                  >
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-sky-400 text-xs font-black text-slate-950">
                       ✓
                     </span>
                     <span>{feature}</span>
@@ -141,7 +142,7 @@ export default function PricingSection() {
               </ul>
 
               <Link
-                href="/contact"
+                href={item.href}
                 className={`mt-8 inline-flex w-full items-center justify-center rounded-full px-5 py-4 text-xs font-black uppercase tracking-[0.18em] transition ${
                   item.featured
                     ? "bg-slate-950 text-white hover:bg-slate-800"
